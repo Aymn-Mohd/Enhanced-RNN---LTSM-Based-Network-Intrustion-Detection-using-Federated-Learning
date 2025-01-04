@@ -16,11 +16,11 @@ After PCA - Training Shape: (100774, 5, 20)
 After PCA - Test Shape: (22539, 5, 20)
 
 Processing Times:
-Training Data Preprocessing: 1.02 seconds
-Model Training: 233.41 seconds
-Test Data Preprocessing: 0.63 seconds
-Model Evaluation: 21.47 seconds
-Total Execution Time: 257.18 seconds
+Training Data Preprocessing: 1.64 seconds
+Model Training: 268.09 seconds
+Test Data Preprocessing: 0.91 seconds
+Model Evaluation: 28.44 seconds
+Total Execution Time: 300.25 seconds
 
 Training Confusion Matrix:
 True Negatives: 0
