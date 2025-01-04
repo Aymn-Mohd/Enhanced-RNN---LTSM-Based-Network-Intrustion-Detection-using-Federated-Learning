@@ -14,7 +14,7 @@ from sklearn.decomposition import PCA
 import tensorflow as tf
 from tensorflow.keras import regularizers
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, BatchNormalization, LSTM, Bidirectional
+from tensorflow.keras.layers import Dense, Dropout, BatchNormalization, LSTM, SimpleRNN, Bidirectional
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 # Suppress warnings and set pandas display options
@@ -170,29 +170,29 @@ class IntrusionDetectionSystem:
             raise Exception(f"Preprocessing error: {str(e)}")
     
     def build_model(self, input_shape):
-        """Build the LSTM model"""
+        """Build the Hybrid RNN-LSTM model"""
         model = Sequential([
-            # First LSTM layer
-            LSTM(128, input_shape=input_shape, return_sequences=True,
-                 kernel_regularizer=regularizers.l2(0.01)),
+            # First layer: RNN for initial feature extraction
+            SimpleRNN(128, input_shape=input_shape, return_sequences=True,
+                     kernel_regularizer=regularizers.l2(0.01)),
             BatchNormalization(),
             Dropout(0.3),
             
-            # Second LSTM layer
+            # Second layer: LSTM for complex pattern recognition
             LSTM(64, return_sequences=True,
                  kernel_regularizer=regularizers.l2(0.01)),
             BatchNormalization(),
             Dropout(0.3),
             
-            # Third LSTM layer with Bidirectional wrapper
+            # Third layer: Bidirectional LSTM for temporal pattern learning
             Bidirectional(LSTM(32, return_sequences=True,
                              kernel_regularizer=regularizers.l2(0.01))),
             BatchNormalization(),
             Dropout(0.3),
             
-            # Fourth LSTM layer
-            LSTM(16, return_sequences=False,
-                 kernel_regularizer=regularizers.l2(0.01)),
+            # Fourth layer: RNN for final sequence processing
+            SimpleRNN(16, return_sequences=False,
+                     kernel_regularizer=regularizers.l2(0.01)),
             BatchNormalization(),
             Dropout(0.3),
             
@@ -210,11 +210,19 @@ class IntrusionDetectionSystem:
             Dense(1, activation='sigmoid')
         ])
         
+        # Use a lower learning rate for the hybrid model
         model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+            optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
             loss='binary_crossentropy',
             metrics=['accuracy']
         )
+        
+        print("\nHybrid RNN-LSTM Model Architecture:")
+        print("1. SimpleRNN layer (128 units) - Initial feature extraction")
+        print("2. LSTM layer (64 units) - Complex pattern recognition")
+        print("3. Bidirectional LSTM layer (32 units) - Temporal pattern learning")
+        print("4. SimpleRNN layer (16 units) - Final sequence processing")
+        print("5. Dense layers (32 -> 16 -> 1) - Classification\n")
         
         self.model = model
         model.summary()
