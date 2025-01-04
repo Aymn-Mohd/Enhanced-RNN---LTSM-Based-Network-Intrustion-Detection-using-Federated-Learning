@@ -170,53 +170,78 @@ class IntrusionDetectionSystem:
             raise Exception(f"Preprocessing error: {str(e)}")
     
     def build_model(self, input_shape):
-        """Build the Hybrid RNN-LSTM model"""
-        model = Sequential([
-            # First layer: RNN for initial feature extraction
-            SimpleRNN(128, input_shape=input_shape, return_sequences=True,
-                     kernel_regularizer=regularizers.l2(0.01)),
-            BatchNormalization(),
-            Dropout(0.3),
+        """Build the Hybrid RNN-LSTM model
+        
+        Args:
+            input_shape (tuple): Shape of input data (sequence_length, features)
             
-            # Second layer: LSTM for complex pattern recognition
+        Returns:
+            model: Compiled Keras model
+        """
+        model = Sequential([
+            # Layer 1: Initial RNN layer for basic feature extraction
+            # Input shape: (sequence_length, features)
+            # Output shape: (sequence_length, 128)
+            SimpleRNN(128, input_shape=input_shape, return_sequences=True,
+                     kernel_regularizer=regularizers.l2(0.01)),  # L2 regularization to prevent overfitting
+            BatchNormalization(),  # Normalize layer outputs
+            Dropout(0.3),  # Randomly drop 30% of neurons to prevent overfitting
+            
+            # Layer 2: LSTM layer for processing complex patterns
+            # Input shape: (sequence_length, 128)
+            # Output shape: (sequence_length, 64)
             LSTM(64, return_sequences=True,
                  kernel_regularizer=regularizers.l2(0.01)),
             BatchNormalization(),
             Dropout(0.3),
             
-            # Third layer: Bidirectional LSTM for temporal pattern learning
+            # Layer 3: Bidirectional LSTM for capturing patterns in both directions
+            # Input shape: (sequence_length, 64)
+            # Output shape: (sequence_length, 64) [32*2 due to bidirectional]
             Bidirectional(LSTM(32, return_sequences=True,
                              kernel_regularizer=regularizers.l2(0.01))),
             BatchNormalization(),
             Dropout(0.3),
             
-            # Fourth layer: RNN for final sequence processing
+            # Layer 4: Final RNN layer for sequence summarization
+            # Input shape: (sequence_length, 64)
+            # Output shape: (16)
             SimpleRNN(16, return_sequences=False,
                      kernel_regularizer=regularizers.l2(0.01)),
             BatchNormalization(),
             Dropout(0.3),
             
             # Dense layers for classification
+            # First dense layer: dimensionality reduction
+            # Input shape: (16)
+            # Output shape: (32)
             Dense(32, activation='relu',
                  kernel_regularizer=regularizers.l2(0.01)),
             BatchNormalization(),
             Dropout(0.3),
             
+            # Second dense layer: further feature processing
+            # Input shape: (32)
+            # Output shape: (16)
             Dense(16, activation='relu',
                  kernel_regularizer=regularizers.l2(0.01)),
             BatchNormalization(),
             Dropout(0.3),
             
-            Dense(1, activation='sigmoid')
+            # Output layer: binary classification
+            # Input shape: (16)
+            # Output shape: (1)
+            Dense(1, activation='sigmoid')  # Sigmoid for binary classification
         ])
         
-        # Use a lower learning rate for the hybrid model
+        # Compile model with binary classification settings
         model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
-            loss='binary_crossentropy',
-            metrics=['accuracy']
+            optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),  # Adam optimizer with low learning rate
+            loss='binary_crossentropy',  # Binary classification loss
+            metrics=['accuracy']  # Track accuracy during training
         )
         
+        # Print model architecture summary
         print("\nHybrid RNN-LSTM Model Architecture:")
         print("1. SimpleRNN layer (128 units) - Initial feature extraction")
         print("2. LSTM layer (64 units) - Complex pattern recognition")
