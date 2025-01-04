@@ -1,0 +1,39 @@
+==================================================
+INTRUSION DETECTION SYSTEM - DETAILED RESULTS
+==================================================
+
+Model Parameters:
+Sequence Length: 5
+PCA Components: 20
+Batch Size: 32
+Initial Learning Rate: 0.001
+Dropout Rate: 0.3
+
+Data Dimensions:
+Original Training Data Shape: (125973, 42)
+Original Test Data Shape: (22544, 42)
+After PCA - Training Shape: (100774, 5, 20)
+After PCA - Test Shape: (22539, 5, 20)
+
+Processing Times:
+Training Data Preprocessing: 1.02 seconds
+Model Training: 233.41 seconds
+Test Data Preprocessing: 0.63 seconds
+Model Evaluation: 21.47 seconds
+Total Execution Time: 257.18 seconds
+
+Training Confusion Matrix:
+True Negatives: 0
+False Positives: 51
+False Negatives: 0
+True Positives: 100723
+
+Test Confusion Matrix:
+True Negatives: 0
+False Positives: 123
+False Negatives: 0
+True Positives: 22416
+
+Detailed Metrics:
+Training - Accuracy: 0.9995, Precision: 0.9995, Recall: 1.0000, F1: 0.9997
+Test - Accuracy: 0.9945, Precision: 0.9945, Recall: 1.0000, F1: 0.9973
