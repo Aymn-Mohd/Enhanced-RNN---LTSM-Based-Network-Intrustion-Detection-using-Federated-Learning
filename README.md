@@ -1,7 +1,7 @@
 # Hybrid RNN-LSTM Network for Intrusion Detection with Federated Learning
 
 ## Project Overview
-This project implements a hybrid deep learning model combining RNN and LSTM architectures for network intrusion detection. The model is designed to detect various types of network attacks using the KDD Cup '99 dataset. It supports both standalone and federated learning modes.
+This project implements a hybrid deep learning model combining RNN and LSTM architectures for network intrusion detection. The model is designed to detect various types of network attacks using the NSL-KDD dataset. It supports both standalone and federated learning modes, leveraging the Flower framework for distributed training.
 
 ## Model Architecture
 ```mermaid
@@ -59,82 +59,38 @@ flwr>=1.5.0  # For federated learning
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd intrusion-detection-system
 ```
 
-2. Install dependencies:
+2. Navigate to the project directory:
+```bash
+cd <project-directory>
+```
+
+3. Install the required packages:
 ```bash
 pip install -r requirements.txt
 ```
 
-## Dataset
-The model uses the KDD Cup '99 dataset which should be placed in the root directory:
-- `KDDTrain+.txt`: Training dataset
-- `KDDTest+.txt`: Testing dataset
-
-## Model Components
-
-### 1. Data Preprocessing
-- Label encoding for categorical features
-- Robust scaling for numerical features
-- PCA dimensionality reduction
-- Sequence preparation for RNN/LSTM processing
-
-### 2. Model Architecture
-1. **Input Layer**
-   - Accepts sequences of preprocessed features
-
-2. **RNN Layer (128 units)**
-   - Initial feature extraction
-   - Returns sequences for deeper processing
-
-3. **LSTM Layer (64 units)**
-   - Complex pattern recognition
-   - Enhanced memory capabilities
-
-4. **Bidirectional LSTM Layer (32 units)**
-   - Processes sequences in both directions
-   - Captures temporal dependencies
-
-5. **RNN Layer (16 units)**
-   - Final sequence processing
-   - Feature summarization
-
-6. **Dense Layers**
-   - Dimensionality reduction and classification
-   - Final binary prediction
-
-### 3. Training Features
-- Early stopping to prevent overfitting
-- Learning rate reduction on plateau
-- Batch normalization
-- Dropout regularization (30%)
-- L2 regularization
-
 ## Usage
-
-### Standalone Mode
-```python
-from intrusion_detection_lstm_rnn import IntrusionDetectionSystem
-
-# Initialize the model
-ids = IntrusionDetectionSystem(sequence_length=5, n_components=20)
-
-# Train the model
-ids.train(X_train, y_train)
-
-# Evaluate performance
-metrics = ids.evaluate_model(X_train, X_test, y_train, y_test)
+- To train the model in standalone mode, run:
+```bash
+python intrusion-detection-lstm-rnn.py
 ```
 
-### Federated Learning Mode
-```python
-# Start the federated learning server
-python federated_ids.py
-
-# In separate terminals, start multiple clients
-# The script automatically handles client creation and data partitioning
+- To train the model using federated learning, start the server and clients:
+```bash
+python server.py --port <port-number> --min-clients <number-of-clients> --rounds <number-of-rounds>
+python client.py --client-id <client-id> --server-port <port-number>
 ```
+
+## Results
+- The model achieves high accuracy and demonstrates robust performance across various network attack scenarios.
+- Detailed metrics and visualizations are available in the `fl_results` directory.
+
+## Future Work
+- Addressing class imbalance and optimizing ROC-AUC scores.
+- Enhancing federated learning with adaptive client selection and secure aggregation.
+- Exploring advanced deep learning models and real-world data testing.
 
 ## Federated Learning Architecture
 ```mermaid
