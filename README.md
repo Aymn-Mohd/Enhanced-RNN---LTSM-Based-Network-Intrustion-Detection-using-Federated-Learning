@@ -1,7 +1,7 @@
-# Hybrid RNN-LSTM Network for Intrusion Detection
+# Hybrid RNN-LSTM Network for Intrusion Detection with Federated Learning
 
 ## Project Overview
-This project implements a hybrid deep learning model combining RNN and LSTM architectures for network intrusion detection. The model is designed to detect various types of network attacks using the KDD Cup '99 dataset.
+This project implements a hybrid deep learning model combining RNN and LSTM architectures for network intrusion detection. The model is designed to detect various types of network attacks using the KDD Cup '99 dataset. It supports both standalone and federated learning modes.
 
 ## Model Architecture
 ```mermaid
@@ -39,15 +39,20 @@ graph TD
 - Comprehensive preprocessing pipeline
 - Advanced regularization techniques
 - Detailed performance metrics and visualizations
+- Federated learning support using Flower (flwr)
+  - Distributed training across multiple clients
+  - Secure model aggregation
+  - Privacy-preserving learning
 
 ## Requirements
 ```python
-numpy
-pandas
-tensorflow
-scikit-learn
-matplotlib
-seaborn
+numpy>=1.21.0
+pandas>=1.3.0
+tensorflow>=2.8.0
+scikit-learn>=1.0.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
+flwr>=1.5.0  # For federated learning
 ```
 
 ## Installation
@@ -107,6 +112,8 @@ The model uses the KDD Cup '99 dataset which should be placed in the root direct
 - L2 regularization
 
 ## Usage
+
+### Standalone Mode
 ```python
 from intrusion_detection_lstm_rnn import IntrusionDetectionSystem
 
@@ -119,6 +126,45 @@ ids.train(X_train, y_train)
 # Evaluate performance
 metrics = ids.evaluate_model(X_train, X_test, y_train, y_test)
 ```
+
+### Federated Learning Mode
+```python
+# Start the federated learning server
+python federated_ids.py
+
+# In separate terminals, start multiple clients
+# The script automatically handles client creation and data partitioning
+```
+
+## Federated Learning Architecture
+```mermaid
+graph TD
+    Server[Federated Server] --> Client1[Client 1]
+    Server --> Client2[Client 2]
+    Server --> Client3[Client 3]
+    
+    Client1 --> LocalData1[Local Dataset 1]
+    Client2 --> LocalData2[Local Dataset 2]
+    Client3 --> LocalData3[Local Dataset 3]
+    
+    LocalData1 --> Train1[Local Training]
+    LocalData2 --> Train2[Local Training]
+    LocalData3 --> Train3[Local Training]
+    
+    Train1 --> Aggregate[Model Aggregation]
+    Train2 --> Aggregate
+    Train3 --> Aggregate
+    
+    Aggregate --> Update[Global Model Update]
+    Update --> Server
+```
+
+## Federated Learning Features
+- **Distributed Training**: Train models across multiple clients while keeping data local
+- **Privacy Preservation**: Raw data never leaves client devices
+- **Model Aggregation**: Secure aggregation of model updates using FedAvg strategy
+- **Scalability**: Support for dynamic number of clients
+- **Fault Tolerance**: Robust to client failures and dropouts
 
 ## Output Files
 The model generates several output files:
